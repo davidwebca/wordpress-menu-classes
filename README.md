@@ -26,7 +26,7 @@ The filters use the depth argument given by WordPress which is an index, thus st
 
 Here's a list of the custom arguments you can pass to wp_nav_menu that are supported by this package : 
 
-- link_atts or link_atts_$depth            ->      Add any attribute to ```<a>``` elements
+- link_atts or link_atts_$depth            ->      Add any attribute to ```<a>`` elements
 - a_class or a_class_$depth                ->      Add classes to ```<a>``` elements
 - li_class or li_class_$depth              ->      Add classes to ```<li>``` elements
 - submenu_class or submenu_class_$depth    ->      Add classes to submenu ```<ul>``` elements
@@ -39,7 +39,7 @@ wp_nav_menu([
     'a_class' => 'text-black',
     'a_class_2'
     // ...
-])
+]);
 ```
 
 Ex.: More complete example with some TailwindCSS classes and AlpineJS sugar
@@ -60,7 +60,7 @@ wp_nav_menu([
     'a_class_1' => 'flex h-full items-center uppercase py-2 relative border-white border-opacity-40 hover:border-opacity-100',
     'submenu_class' => 'list-none pl-0 grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 xl:gap-x-24 xxl:gap-x-32',
     'container'=>false
-])
+]);
 ```
 
 ## Widgets menus
