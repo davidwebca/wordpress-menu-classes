@@ -26,7 +26,7 @@ class WordPressMenuClasses
      *                          his is an index, thus starts with 0 for the root level.
      * @return object           Modified attributes for the current link
      */
-    protected function navMenuLinkAttributes($atts, $item, $args, $depth)
+    public function navMenuLinkAttributes($atts, $item, $args, $depth)
     {
         if (property_exists($args, "link_atts")) {
             $atts = array_merge($atts, $args->link_atts);
@@ -91,7 +91,7 @@ class WordPressMenuClasses
      *                              This is an index, thus starts with 0 for the root level.
      * @return array                Modified classes for the current li element
      */
-    protected function navMenuCSSClass($classes, $item, $args, $depth)
+    public function navMenuCSSClass($classes, $item, $args, $depth)
     {
         if (property_exists($args, "li_class")) {
             $arr_classes = explode(" ", $args->li_class);
@@ -114,7 +114,7 @@ class WordPressMenuClasses
      *                              This is an index, thus starts with 0 for the root level.
      * @return object               Modified attributes for the current ul submenu
      */
-    protected function navMenuSubmenuCSSClass($classes, $args, $depth)
+    public function navMenuSubmenuCSSClass($classes, $args, $depth)
     {
         if (property_exists($args, "submenu_class")) {
             $arr_classes = explode(" ", $args->submenu_class);
