@@ -26,10 +26,14 @@ The filters use the depth argument given by WordPress which is an index, thus st
 
 Here's a list of the custom arguments you can pass to wp_nav_menu that are supported by this package : 
 
-- link_atts or link_atts_$depth            ->      Add any attribute to ```<a>`` elements
-- a_class or a_class_$depth                ->      Add classes to ```<a>``` elements
-- li_class or li_class_$depth              ->      Add classes to ```<li>``` elements
-- submenu_class or submenu_class_$depth    ->      Add classes to submenu ```<ul>``` elements
+- ```link_atts``` or ```link_atts_$depth```
+  - Add any attribute to ```<a>``` elements
+- ```a_class``` or ```a_class_$depth```
+  - Add classes to ```<a>``` elements
+- ```li_class``` or ```li_class_$depth```
+  - Add classes to ```<li>``` elements
+- ```submenu_class``` or ```submenu_class_$depth```
+  - Add classes to submenu ```<ul>``` elements
 
 Ex.: add a "text-black" class to all links and "text-blue" class only to 3rd level links
 
