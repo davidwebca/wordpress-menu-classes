@@ -113,4 +113,4 @@ All issues can be reported right here on github and I'll take a look at it. Make
 
 ## License
 
-Sage Directives is provided under the [MIT License](https://github.com/log1x/sage-directives/blob/master/LICENSE.md).
+This code is provided under the [MIT License](https://github.com/log1x/sage-directives/blob/master/LICENSE.md).
