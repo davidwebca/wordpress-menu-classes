@@ -41,31 +41,6 @@ class WordPressMenuClasses
 
         $classes = explode(" ", $atts["class"]);
 
-        /**
-         * Fix for tailwindcss classes that include ":" (colon)
-         * Enter triple underscore hover___text-primary instaed of hover:text-primary
-         *
-         * Some filters provided so that you can customize your own replacements,
-         * passed directly to preg_replace so supports array replacements as well.
-         *
-         * WordPress trac following the issue of escaping CSS classes:
-         * @link https://core.trac.wordpress.org/ticket/33924
-         */
-        $patterns = apply_filters(
-            "nav_menu_css_class_unescape_patterns",
-            "/___/"
-        );
-        $replacements = apply_filters(
-            "nav_menu_css_class_unescape_replacements",
-            ":"
-        );
-        $classes = array_map(function ($cssclass) use (
-            $patterns,
-            $replacements
-        ) {
-            return preg_replace($patterns, $replacements, $cssclass);
-        },
-        $classes);
 
         if (property_exists($args, "a_class")) {
             $arr_classes = explode(" ", $args->a_class);
@@ -75,6 +50,11 @@ class WordPressMenuClasses
             $arr_classes = explode(" ", $args->{"a_class_$depth"});
             $classes = array_merge($classes, $arr_classes);
         }
+
+        // Applying this here too just in case, but there's
+        // no default user interface to add a class directly to a link in the menu
+        // (classes are applied to li elements by default)
+        $classes = $this->fixWordPressClasses($classes);
 
         $atts["class"] = implode(" ", $classes);
 
@@ -102,6 +82,8 @@ class WordPressMenuClasses
             $classes = array_merge($classes, $arr_classes);
         }
 
+        $classes = $this->fixWordPressClasses($classes);
+
         return $classes;
     }
 
@@ -125,6 +107,40 @@ class WordPressMenuClasses
             $arr_classes = explode(" ", $args->{"submenu_class_$depth"});
             $classes = array_merge($classes, $arr_classes);
         }
+
+        // Applying this here too just in case, but there's
+        // no default user interface to add a class to a submenu
+        $classes = $this->fixWordPressClasses($classes);
+
+        return $classes;
+    }
+
+    /**
+     * Fix for tailwindcss classes that include ":" (colon)
+     * Enter triple underscore hover___text-primary instaed of hover:text-primary
+     *
+     * Some filters provided so that you can customize your own replacements,
+     * passed directly to preg_replace so supports array replacements as well.
+     *
+     * WordPress trac following the issue of escaping CSS classes:
+     * @link https://core.trac.wordpress.org/ticket/33924
+     */
+    public function fixWordPressClasses($classes) {
+        $patterns = apply_filters(
+            "nav_menu_css_class_unescape_patterns",
+            "/___/"
+        );
+        $replacements = apply_filters(
+            "nav_menu_css_class_unescape_replacements",
+            ":"
+        );
+        $classes = array_map(function ($cssclass) use (
+            $patterns,
+            $replacements
+        ) {
+            return preg_replace($patterns, $replacements, $cssclass);
+        },
+        $classes);
 
         return $classes;
     }
