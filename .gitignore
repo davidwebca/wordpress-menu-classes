@@ -6,3 +6,4 @@ vendor
 *.log
 *.sql
 *.sqlite
+*.sublime-workspace
