@@ -59,8 +59,8 @@ wp_nav_menu([
     'li_class' => 'w-full',
     'li_class_0' => 'mb-12',
     'a_class' => 'text-sm xl:text-xl text-white border-b hover:border-white',
-    'a_class_0' => 'text-3xl xl:text-5xl relative dash-left js-stagger  a-mask after:bg-primary',
-    'li_class_1' => 'js-stagger a-mask after:bg-primary hidden lg:block',
+    'a_class_0' => 'text-3xl xl:text-5xl relative after:bg-primary',
+    'li_class_1' => 'after:bg-primary hidden lg:block',
     'a_class_1' => 'flex h-full items-center uppercase py-2 relative border-white border-opacity-40 hover:border-opacity-100',
     'submenu_class' => 'list-none pl-0 grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 xl:gap-x-24 xxl:gap-x-32',
     'container'=>false

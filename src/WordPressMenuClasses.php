@@ -28,11 +28,16 @@ class WordPressMenuClasses
      */
     public function navMenuLinkAttributes($atts, $item, $args, $depth)
     {
+        $index = $item->menu_order;
+
         if (property_exists($args, "link_atts")) {
             $atts = array_merge($atts, $args->link_atts);
         }
         if (property_exists($args, "link_atts_$depth")) {
             $atts = array_merge($atts, $args->{"link_atts_$depth"});
+        }
+        if (property_exists($args, "link_atts_order_$index")) {
+            $atts = array_merge($atts, $args->{"link_atts_order_$index"});
         }
 
         if (empty($atts["class"])) {
@@ -49,6 +54,10 @@ class WordPressMenuClasses
         if (property_exists($args, "a_class_$depth")) {
             $arr_classes = explode(" ", $args->{"a_class_$depth"});
             $classes = array_merge($classes, $arr_classes);
+        }
+        if(property_exists($args, "a_class_order_$index"))
+            $arr_classes = explode(" ", $args->{"a_class_order_$index"});
+            $classes = array_merge($classes, $arr_classes); {
         }
 
         // Applying this here too just in case, but there's
@@ -73,6 +82,8 @@ class WordPressMenuClasses
      */
     public function navMenuCSSClass($classes, $item, $args, $depth)
     {
+        $index = $item->menu_order;
+
         if (property_exists($args, "li_class")) {
             $arr_classes = explode(" ", $args->li_class);
             $classes = array_merge($classes, $arr_classes);
@@ -80,6 +91,10 @@ class WordPressMenuClasses
         if (property_exists($args, "li_class_$depth")) {
             $arr_classes = explode(" ", $args->{"li_class_$depth"});
             $classes = array_merge($classes, $arr_classes);
+        }
+        if(property_exists($args, "li_class_order_$index"))
+            $arr_classes = explode(" ", $args->{"li_class_order_$index"});
+            $classes = array_merge($classes, $arr_classes); {
         }
 
         $classes = $this->fixWordPressClasses($classes);
