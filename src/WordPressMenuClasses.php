@@ -94,8 +94,8 @@ class WordPressMenuClasses
         }
         if (property_exists($args, "li_class_order_$index")) {
             $arr_classes = explode(' ', $args->{"li_class_order_$index"});
+            $classes = array_merge($classes, $arr_classes);
         }
-        $classes = array_merge($classes, $arr_classes);
 
 
         $classes = $this->fixWordPressClasses($classes);
