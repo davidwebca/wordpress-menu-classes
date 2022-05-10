@@ -26,11 +26,11 @@ The filters use the depth argument given by WordPress which is an index, thus st
 
 Here's a list of the custom arguments you can pass to wp_nav_menu that are supported by this package : 
 
-- ```link_atts``` or ```link_atts_$depth```
+- ```link_atts``` or ```link_atts_$depth``` or ```link_atts_order_$order```
   - Add any attribute to ```<a>``` elements
-- ```a_class``` or ```a_class_$depth```
+- ```a_class``` or ```a_class_$depth``` or ```a_class_order_$order```
   - Add classes to ```<a>``` elements
-- ```li_class``` or ```li_class_$depth```
+- ```li_class``` or ```li_class_$depth``` or ```li_class_order_$order```
   - Add classes to ```<li>``` elements
 - ```submenu_class``` or ```submenu_class_$depth```
   - Add classes to submenu ```<ul>``` elements
