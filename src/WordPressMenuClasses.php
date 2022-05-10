@@ -11,9 +11,9 @@ class WordPressMenuClasses
      */
     public function __construct()
     {
-        add_filter("nav_menu_link_attributes", [$this, "navMenuLinkAttributes"], 10, 4);
-        add_filter("nav_menu_css_class", [$this, "navMenuCSSClass"], 10, 4);
-        add_filter("nav_menu_submenu_css_class", [$this, "navMenuSubmenuCSSClass"], 10, 3);
+        add_filter('nav_menu_link_attributes', [$this, 'navMenuLinkAttributes'], 10, 4);
+        add_filter('nav_menu_css_class', [$this, 'navMenuCSSClass'], 10, 4);
+        add_filter('nav_menu_submenu_css_class', [$this, 'navMenuSubmenuCSSClass'], 10, 3);
     }
 
     /**
@@ -30,7 +30,7 @@ class WordPressMenuClasses
     {
         $index = $item->menu_order;
 
-        if (property_exists($args, "link_atts")) {
+        if (property_exists($args, 'link_atts')) {
             $atts = array_merge($atts, $args->link_atts);
         }
         if (property_exists($args, "link_atts_$depth")) {
@@ -40,24 +40,23 @@ class WordPressMenuClasses
             $atts = array_merge($atts, $args->{"link_atts_order_$index"});
         }
 
-        if (empty($atts["class"])) {
-            $atts["class"] = "";
+        if (empty($atts['class'])) {
+            $atts['class'] = '';
         }
 
-        $classes = explode(" ", $atts["class"]);
+        $classes = explode(' ', $atts['class']);
 
-
-        if (property_exists($args, "a_class")) {
-            $arr_classes = explode(" ", $args->a_class);
+        if (property_exists($args, 'a_class')) {
+            $arr_classes = explode(' ', $args->a_class);
             $classes = array_merge($classes, $arr_classes);
         }
         if (property_exists($args, "a_class_$depth")) {
-            $arr_classes = explode(" ", $args->{"a_class_$depth"});
+            $arr_classes = explode(' ', $args->{"a_class_$depth"});
             $classes = array_merge($classes, $arr_classes);
         }
-        if(property_exists($args, "a_class_order_$index"))
-            $arr_classes = explode(" ", $args->{"a_class_order_$index"});
-            $classes = array_merge($classes, $arr_classes); {
+        if (property_exists($args, "a_class_order_$index")) {
+            $arr_classes = explode(' ', $args->{"a_class_order_$index"});
+            $classes = array_merge($classes, $arr_classes);
         }
 
         // Applying this here too just in case, but there's
@@ -65,7 +64,7 @@ class WordPressMenuClasses
         // (classes are applied to li elements by default)
         $classes = $this->fixWordPressClasses($classes);
 
-        $atts["class"] = implode(" ", $classes);
+        $atts['class'] = implode(' ', $classes);
 
         return $atts;
     }
@@ -84,18 +83,19 @@ class WordPressMenuClasses
     {
         $index = $item->menu_order;
 
-        if (property_exists($args, "li_class")) {
-            $arr_classes = explode(" ", $args->li_class);
+        if (property_exists($args, 'li_class')) {
+            $arr_classes = explode(' ', $args->li_class);
             $classes = array_merge($classes, $arr_classes);
         }
         if (property_exists($args, "li_class_$depth")) {
-            $arr_classes = explode(" ", $args->{"li_class_$depth"});
+            $arr_classes = explode(' ', $args->{"li_class_$depth"});
             $classes = array_merge($classes, $arr_classes);
         }
-        if(property_exists($args, "li_class_order_$index"))
-            $arr_classes = explode(" ", $args->{"li_class_order_$index"});
-            $classes = array_merge($classes, $arr_classes); {
+        if (property_exists($args, "li_class_order_$index")) {
+            $arr_classes = explode(' ', $args->{"li_class_order_$index"});
         }
+        $classes = array_merge($classes, $arr_classes);
+
 
         $classes = $this->fixWordPressClasses($classes);
 
@@ -113,13 +113,13 @@ class WordPressMenuClasses
      */
     public function navMenuSubmenuCSSClass($classes, $args, $depth)
     {
-        if (property_exists($args, "submenu_class")) {
-            $arr_classes = explode(" ", $args->submenu_class);
+        if (property_exists($args, 'submenu_class')) {
+            $arr_classes = explode(' ', $args->submenu_class);
             $classes = array_merge($classes, $arr_classes);
         }
 
         if (property_exists($args, "submenu_class_$depth")) {
-            $arr_classes = explode(" ", $args->{"submenu_class_$depth"});
+            $arr_classes = explode(' ', $args->{"submenu_class_$depth"});
             $classes = array_merge($classes, $arr_classes);
         }
 
@@ -140,28 +140,19 @@ class WordPressMenuClasses
      * WordPress trac following the issue of escaping CSS classes:
      * @link https://core.trac.wordpress.org/ticket/33924
      */
-    public function fixWordPressClasses($classes) {
-        $patterns = apply_filters(
-            "nav_menu_css_class_unescape_patterns",
-            "/___/"
-        );
-        $replacements = apply_filters(
-            "nav_menu_css_class_unescape_replacements",
-            ":"
-        );
-        $classes = array_map(function ($cssclass) use (
-            $patterns,
-            $replacements
-        ) {
+    public function fixWordPressClasses($classes)
+    {
+        $patterns = apply_filters('nav_menu_css_class_unescape_patterns', '/___/');
+        $replacements = apply_filters('nav_menu_css_class_unescape_replacements', ':');
+        $classes = array_map(function ($cssclass) use ($patterns, $replacements) {
             return preg_replace($patterns, $replacements, $cssclass);
-        },
-        $classes);
+        }, $classes);
 
         return $classes;
     }
 }
 
 // phpcs:disable
-if (function_exists("add_action")) {
+if (function_exists('add_action')) {
     new WordPressMenuClasses();
 }
