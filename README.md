@@ -1,6 +1,6 @@
 # WordPress Menu Classes
 
-Allow adding custom classes to WordPress menu ul, li, a and at different depths. Perfect for TailwindCSS and AlpineJS usage.
+Allow adding custom classes to WordPress li, a and submenus at different depths. Perfect for TailwindCSS and AlpineJS usage.
 
 This package adds WordPress filters to allow custom arguments to wp_nav_menu to, in turn, allow custom classes to every element of a menu. You can apply a class only to certain depth of your menu as well.
 
@@ -18,7 +18,7 @@ Install via Composer:
 $ composer require davidwebca/wordpress-menu-classes
 ```
 
-If your theme already uses composer, the filters will be automatically added thanks to the auto-loading and auto-instantiating class. Otherwise, if you're looking for a standalone file you want to add to your theme, either look for src/WordPressMenuClasses.php in this repository or add this [gist](https://gist.github.com/davidwebca/a7b278bbb0c0ce1d1ec5620126e863bb) in your theme's functions.php.
+If your theme already uses composer, the filters will be automatically added thanks to the auto-loading and auto-instantiating class. Otherwise, if you're looking for a standalone file you want to add to your theme, either look for src/WordPressMenuClasses.php in this repository.
 
 ## Instructions
 
@@ -26,14 +26,17 @@ The filters use the depth argument given by WordPress which is an index, thus st
 
 Here's a list of the custom arguments you can pass to wp_nav_menu that are supported by this package : 
 
-- ```link_atts``` or ```link_atts_$depth``` or ```link_atts_order_$order```
-  - Add any attribute to ```<a>``` elements
+- ```a_atts``` or ```a_atts_$depth``` or ```a_atts_order_$order```
 - ```a_class``` or ```a_class_$depth``` or ```a_class_order_$order```
-  - Add classes to ```<a>``` elements
+  - Add any attribute or class to ```<a>``` elements
+
+- ```li_atts``` or ```li_atts_$depth``` or ```li_atts_order_$order```
 - ```li_class``` or ```li_class_$depth``` or ```li_class_order_$order```
-  - Add classes to ```<li>``` elements
+  - Add any attribute or class to ```<li>``` elements
+
+- ```submenu_atts``` or ```submenu_atts_$depth```
 - ```submenu_class``` or ```submenu_class_$depth```
-  - Add classes to submenu ```<ul>``` elements
+  - Add any attribute or class to submenu ```<ul>``` elements. Note that submenus do not support order.
 
 Ex.: add a "text-black" class to all links and "text-blue" class only to 3rd level links
 
@@ -46,24 +49,39 @@ wp_nav_menu([
 ]);
 ```
 
-Ex.: More complete example with some TailwindCSS classes and AlpineJS sugar
+Ex.: Supports classes as array (this is non-native to WordPress, but provided by this package as a convenience)
 
 ```php
 wp_nav_menu([
     'theme_location' => 'primary_navigation',
-    'menu_class' => 'relative w-full z-10 pl-0 list-none flex',
-    'link_atts_0' => [
-        ":class" => "{ 'active': tab === 'foo' }",
-        "@click" => "tab = 'foo'"
+    'a_class' => ['text-white', 'bg-blue-500'],
+    'li_atts' => [
+        'class' => ['focus:ring-2', 'ring-orange-500']
+    ]
+    // ...
+]);
+```
+
+Ex.: More complete example with some TailwindCSS classes and AlpineJS sugar. This is a fully functional accordion navigation without additional JavaScript (requires Alpine's x-collapse plugin).
+
+```php
+wp_nav_menu([
+    'theme_location' => 'primary_navigation',
+    'container' => 'nav',
+    'menu_class' => 'list-none p-0 m-0',
+    'a_class_0' => "font-bold inline-flex items-center text-xl",
+    'li_atts_0' => [
+        'class' => "w-full px-6 before:mr-4 before:cursor-pointer before:shrink-0 before:grow-0 before:inline-flex before:justify-center before:items-center before:w-6 before:h-6 before:rounded before:bg-black before:text-white before:p-1 before:hover:opacity-50 before:transition",
+        ':class' => "{'before:content-[\'+\']': !opened, 'before:content-[\'-\']': opened}",
+        'x-data' => "{opened: false}",
+        'x-on:click' => 'opened = !opened'
     ],
-    'li_class' => 'w-full',
-    'li_class_0' => 'mb-12',
-    'a_class' => 'text-sm xl:text-xl text-white border-b hover:border-white',
-    'a_class_0' => 'text-3xl xl:text-5xl relative after:bg-primary',
-    'li_class_1' => 'after:bg-primary hidden lg:block',
-    'a_class_1' => 'flex h-full items-center uppercase py-2 relative border-white border-opacity-40 hover:border-opacity-100',
-    'submenu_class' => 'list-none pl-0 grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 xl:gap-x-24 xxl:gap-x-32',
-    'container'=>false
+    'submenu_class_0' => 'wowza',
+    'submenu_atts_0' => [
+        'x-show' => 'opened',
+        'x-collapse' => "_",
+        'class' => 'list-none pl-10'
+    ]
 ]);
 ```
 

@@ -12,8 +12,8 @@ class WordPressMenuClasses
     public function __construct()
     {
         add_filter('nav_menu_link_attributes', [$this, 'navMenuLinkAttributes'], 10, 4);
-        add_filter('nav_menu_css_class', [$this, 'navMenuCSSClass'], 10, 4);
-        add_filter('nav_menu_submenu_css_class', [$this, 'navMenuSubmenuCSSClass'], 10, 3);
+        add_filter('nav_menu_item_attributes', [$this, 'navMenuItemAttributes'], 10, 4);
+        add_filter('nav_menu_submenu_attributes', [$this, 'navSubmenuAttributes'], 10, 3);
     }
 
     /**
@@ -30,41 +30,8 @@ class WordPressMenuClasses
     {
         $index = $item->menu_order;
 
-        if (property_exists($args, 'link_atts')) {
-            $atts = array_merge($atts, $args->link_atts);
-        }
-        if (property_exists($args, "link_atts_$depth")) {
-            $atts = array_merge($atts, $args->{"link_atts_$depth"});
-        }
-        if (property_exists($args, "link_atts_order_$index")) {
-            $atts = array_merge($atts, $args->{"link_atts_order_$index"});
-        }
-
-        if (empty($atts['class'])) {
-            $atts['class'] = '';
-        }
-
-        $classes = explode(' ', $atts['class']);
-
-        if (property_exists($args, 'a_class')) {
-            $arr_classes = explode(' ', $args->a_class);
-            $classes = array_merge($classes, $arr_classes);
-        }
-        if (property_exists($args, "a_class_$depth")) {
-            $arr_classes = explode(' ', $args->{"a_class_$depth"});
-            $classes = array_merge($classes, $arr_classes);
-        }
-        if (property_exists($args, "a_class_order_$index")) {
-            $arr_classes = explode(' ', $args->{"a_class_order_$index"});
-            $classes = array_merge($classes, $arr_classes);
-        }
-
-        // Applying this here too just in case, but there's
-        // no default user interface to add a class directly to a link in the menu
-        // (classes are applied to li elements by default)
-        $classes = $this->fixWordPressClasses($classes);
-
-        $atts['class'] = implode(' ', $classes);
+        $atts = $this->buildAttributes('a', $atts, $args, $depth, $index);
+        $atts = $this->buildClasses('a', $atts, $args, $depth, $index);
 
         return $atts;
     }
@@ -79,53 +46,107 @@ class WordPressMenuClasses
      *                              This is an index, thus starts with 0 for the root level.
      * @return array                Modified classes for the current li element
      */
-    public function navMenuCSSClass($classes, $item, $args, $depth)
+    public function navMenuItemAttributes($atts, $item, $args, $depth)
     {
         $index = $item->menu_order;
 
-        if (property_exists($args, 'li_class')) {
-            $arr_classes = explode(' ', $args->li_class);
-            $classes = array_merge($classes, $arr_classes);
-        }
-        if (property_exists($args, "li_class_$depth")) {
-            $arr_classes = explode(' ', $args->{"li_class_$depth"});
-            $classes = array_merge($classes, $arr_classes);
-        }
-        if (property_exists($args, "li_class_order_$index")) {
-            $arr_classes = explode(' ', $args->{"li_class_order_$index"});
-            $classes = array_merge($classes, $arr_classes);
-        }
+        $atts = $this->buildAttributes('li', $atts, $args, $depth, $index);
+        $atts = $this->buildClasses('li', $atts, $args, $depth, $index);
 
-
-        $classes = $this->fixWordPressClasses($classes);
-
-        return $classes;
+        return $atts;
     }
 
     /**
-     * Add custom classes to ul.sub-menu in wp_nav_menu
+     * Add custom classes and attributes to ul.submenu in wp_nav_menu
      *
-     * @param  array    $classes    CSS classes added to all ul submenu of our menu.
-     * @param  object   $args       wp_nav_menu args object
-     * @param  int      $depth      Depth of the current menu item being parsed.
+     * @param  object   $atts   wp_nav_menu attributes object
+     * @param  object   $args   wp_nav_menu args object
+     * @param  int      $depth      Depth of the current submenu being parsed.
      *                              This is an index, thus starts with 0 for the root level.
      * @return object               Modified attributes for the current ul submenu
      */
-    public function navMenuSubmenuCSSClass($classes, $args, $depth)
+    public function navSubmenuAttributes($atts, $args, $depth)
     {
-        if (property_exists($args, 'submenu_class')) {
-            $arr_classes = explode(' ', $args->submenu_class);
-            $classes = array_merge($classes, $arr_classes);
+        $atts = $this->buildAttributes('submenu', $atts, $args, $depth);
+        $atts = $this->buildClasses('submenu', $atts, $args, $depth);
+
+        return $atts;
+    }
+
+    /**
+     * Utility function to build the attributes
+     *
+     * @param  String   $prefix  The prefix (a, li, submenu)
+     * @param  object   $atts    wp_nav_menu attributes object
+     * @param  object   $args    wp_nav_menu args object
+     * @param  int      $depth   Depth of the current submenu being parsed.
+     * @param  int      $index   The index of menu order, -1 is considered absent
+     *
+     * @return object            Modified attributes for the current element
+     */
+    public function buildAttributes($prefix, $atts, $args, $depth, $index = -1) {
+        if (property_exists($args, "{$prefix}_atts")) {
+            $atts = array_merge($atts, $args->{"{$prefix}_atts"});
+        }
+        if (property_exists($args, "{$prefix}_atts_{$depth}")) {
+            $atts = array_merge($atts, $args->{"{$prefix}_atts_{$depth}"});
+        }
+        if ($index !== -1 && property_exists($args, "{$prefix}_atts_order_{$index}")) {
+            $atts = array_merge($atts, $args->{"{$prefix}_atts_order_{$index}"});
         }
 
-        if (property_exists($args, "submenu_class_$depth")) {
-            $arr_classes = explode(' ', $args->{"submenu_class_$depth"});
-            $classes = array_merge($classes, $arr_classes);
+        if (empty($atts['class'])) {
+            $atts['class'] = '';
         }
+        return $atts;
+    }
 
-        // Applying this here too just in case, but there's
-        // no default user interface to add a class to a submenu
+
+
+    /**
+     * Utility function to build the classes
+     *
+     * @param  String   $prefix  The prefix (a, li, submenu)
+     * @param  object   $atts    wp_nav_menu attributes object
+     * @param  object   $args    wp_nav_menu args object
+     * @param  int      $depth   Depth of the current submenu being parsed.
+     * @param  int      $index   The index of menu order, -1 is considered absent
+     *
+     * @return object            Modified attributes for the current element
+     */
+    public function buildClasses($prefix, $atts, $args, $depth, $index = -1) {
+        $classes = explode(' ', $atts['class']);
+
+        $classes = array_merge($classes, $this->arrayOrStringClasses("{$prefix}_class", $args));
+        $classes = array_merge($classes, $this->arrayOrStringClasses("{$prefix}_class_$depth", $args));
+        $classes = array_merge($classes, $this->arrayOrStringClasses("{$prefix}_class_order_$depth", $args));
+
+        // Applying this fix everywhere even though there's only
+        // a user interface to add classes to links so far
         $classes = $this->fixWordPressClasses($classes);
+
+        $atts['class'] = implode(' ', $classes);
+
+        return $atts;
+    }
+
+    /**
+     * Utility function to accept array or string classes
+     *
+     * @param  String  $prop     The property to check on our custom arguments (ex.: ul_class, li_class_order_1)
+     * @param  object  $args     wp_nav_menu args object
+     *
+     * @return object            Modified attributes for the current element
+     */
+    public function arrayOrStringClasses($prop, $args) {
+        $classes = [];
+        if (property_exists($args, $prop)) {
+            $temp_classes = $args->{$prop};
+            if(is_string($temp_classes)) {
+                $temp_classes = explode(' ', $temp_classes);
+            }
+            $classes = array_merge($classes, $temp_classes);
+        }
 
         return $classes;
     }
