@@ -82,6 +82,7 @@ class WordPressMenuClasses
     public function navMenuCSSClass($classes, $item, $args, $depth)
     {
         $index = $item->menu_order;
+        $arr_classes = [];
 
         if (property_exists($args, 'li_class')) {
             $arr_classes = explode(' ', $args->li_class);
