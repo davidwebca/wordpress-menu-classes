@@ -85,14 +85,14 @@ class WordPressMenuClasses
      * @return object            Modified attributes for the current element
      */
     public function buildAttributes($prefix, $atts, $args, $depth, $index = -1) {
-        if (property_exists($args, "{$prefix}_atts")) {
-            $atts = array_merge($atts, $args->{"{$prefix}_atts"});
+        if ($this->hasAttribute($args, "{$prefix}_atts")) {
+            $atts = $this->mergeAttributes($atts, $this->getAttribute($args, "{$prefix}_atts"));
         }
-        if (property_exists($args, "{$prefix}_atts_{$depth}")) {
-            $atts = array_merge($atts, $args->{"{$prefix}_atts_{$depth}"});
+        if ($this->hasAttribute($args, "{$prefix}_atts_{$depth}")) {
+            $atts = $this->mergeAttributes($atts, $this->getAttribute($args, "{$prefix}_atts_{$depth}"));
         }
-        if ($index !== -1 && property_exists($args, "{$prefix}_atts_order_{$index}")) {
-            $atts = array_merge($atts, $args->{"{$prefix}_atts_order_{$index}"});
+        if ($index !== -1 && $this->hasAttribute($args, "{$prefix}_atts_order_{$index}")) {
+            $atts = $this->mergeAttributes($atts, $this->getAttribute($args, "{$prefix}_atts_order_{$index}"));
         }
 
         if (empty($atts['class'])) {
@@ -115,7 +115,7 @@ class WordPressMenuClasses
      * @return object            Modified attributes for the current element
      */
     public function buildClasses($prefix, $atts, $args, $depth, $index = -1) {
-        $classes = explode(' ', $atts['class']);
+        $classes = explode(' ', $this->getAttribute($atts, 'class'));
 
         $classes = array_merge($classes, $this->arrayOrStringClasses("{$prefix}_class", $args));
         $classes = array_merge($classes, $this->arrayOrStringClasses("{$prefix}_class_$depth", $args));
@@ -140,8 +140,8 @@ class WordPressMenuClasses
      */
     public function arrayOrStringClasses($prop, $args) {
         $classes = [];
-        if (property_exists($args, $prop)) {
-            $temp_classes = $args->{$prop};
+        if ($this->hasAttribute($args, $prop)) {
+            $temp_classes = $this->getAttribute($args, $prop);
             if(is_string($temp_classes)) {
                 $temp_classes = explode(' ', $temp_classes);
             }
@@ -149,6 +149,65 @@ class WordPressMenuClasses
         }
 
         return $classes;
+    }
+
+    /**
+     * Utility function to merge attributes with an exception on handling the classes to avoid overriding
+     * 
+     * @param  String  $atts        Original attributes
+     * @param  object  $new_atts    New attributes
+     *
+     * @return array                Modified attributes array
+     */
+    public function mergeAttributes($atts, $new_atts) {
+        $new_classes = $this->arrayOrStringClasses('class', $new_atts);
+
+        if(!empty($new_classes)) {
+            $original_classes = $this->arrayOrStringClasses('class', $atts);
+            $new_classes = array_merge($original_classes, $new_classes);
+
+            // Applying this fix everywhere even though there's only
+            // a user interface to add classes to links so far
+            $classes = $this->fixWordPressClasses($new_classes);
+
+            $new_atts['class'] = implode(' ', $classes);
+        }
+
+        $atts = array_merge($atts, $new_atts);
+
+        return $atts;
+    }
+
+    /**
+     * Checks if an attribute exists on a variable regardless of whether it's an object or array
+     *
+     * @param   object|array    $variable The variable to check (object or array)
+     * @param   string          $attribute The attribute/key name to check for
+     * 
+     * @return  bool            True if the attribute exists, false otherwise
+     */
+    function hasAttribute($variable, $attribute) {
+        return (is_object($variable) && property_exists($variable, $attribute)) || 
+               (is_array($variable) && array_key_exists($attribute, $variable));
+    }
+
+    /**
+     * Gets an attribute from a variable regardless of whether it's an object or array
+     * 
+     * @param   object|array    $variable The variable to get the attribute from (object or array)
+     * @param   string          $attribute The attribute/key name to retrieve
+     * @param   mixed           $default The default value to return if attribute doesn't exist
+     *  
+     * @return  mixed           The value of the attribute or the default value if not found
+     */
+    function getAttribute($variable, $attribute, $default = null) {
+        if (is_object($variable)) {
+            return property_exists($variable, $attribute) ? $variable->$attribute : $default;
+        } elseif (is_array($variable)) {
+            return array_key_exists($attribute, $variable) ? $variable[$attribute] : $default;
+        }
+        
+        return $default;
     }
 
     /**
