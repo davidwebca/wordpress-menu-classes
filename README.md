@@ -18,7 +18,13 @@ Install via Composer:
 $ composer require davidwebca/wordpress-menu-classes
 ```
 
-If your theme already uses composer, the filters will be automatically added thanks to the auto-loading and auto-instantiating class. Otherwise, if you're looking for a standalone file you want to add to your theme, either look for src/WordPressMenuClasses.php in this repository.
+If your theme already uses composer, the filters will be automatically added thanks to the auto-loading and auto-instantiating class. Otherwise, add this to the top of your functions.php: 
+
+```php 
+require_once 'vendor/autoload.php';
+```
+
+And if you're looking for a standalone file you want to add to your theme, look for src/WordPressMenuClasses.php in this repository.
 
 ## Instructions
 
